@@ -1,34 +1,43 @@
 #!/bin/bash
 
 # Output the current kernel
- uname -r
+uname -r
 
  # Press enter
- read -p
+read -n 1 -s -r -p "Press any key to continue"
 
 # List the second from last kernel, remove unneeded info and store the output as a var.
 # "OUTPUT=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk '{print $2}')"
 
- 0=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk -F"[-]" '{print $3}')
- 1=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk -F"[-]" '{print $4}')
+0=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk -F"[-]" '{print $3}')
+
+echo $0
+
+read -n 1 -s -r -p "Press any key to continue"
+
+1=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk -F"[-]" '{print $4}')
+
+echo $1
+
+read -n 1 -s -r -p "Press any key to continue"
 
 # Remove the image initrd.img file manually
- update-initramfs -d -k $0-$1
+update-initramfs -d -k $0-$1
 
 # Remove linux image and image extra
- dpkg --purge linux-image-$0-$1-generic linux-image-extra-$0-$1-generic
+dpkg --purge linux-image-$0-$1-generic linux-image-extra-$0-$1-generic
 
 # Remove linux headers generic
- dpkg --purge linux-headers-$0-$1-generic
+dpkg --purge linux-headers-$0-$1-generic
 
 # Remove linux headers
- dpkg --purge linux-headers-$0-$1
+dpkg --purge linux-headers-$0-$1
 
 # Update dependencies
- apt-get -f install
+apt-get -f install
 
 # Remove all outdated kernels
- apt-get autoremove --purge
+apt-get autoremove --purge
 
 # Done
- echo "Done"
+echo "Done"
