@@ -1,0 +1,41 @@
+$ sudo rm -rv ${TMPDIR:-/var/tmp}/mkinitramfs-*
+
+
+                                  ## In Ubuntu 16.04 and earlier there may be leftover temporary
+                                  ## files to delete.
+                                  ## See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=814345
+
+$ uname -r                        ## This command identifies the currently-running kernel
+4.2.0-21-generic                  ## This is the current kernel.
+                                  ## DO NOT REMOVE it!
+
+$ dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r)
+                                  ## This command lists all the kernels excluding the booted
+                                  ## kernel in the package database, and their status.
+rc  linux-image-4.2.0-14-generic  ## The oldest kernel in the database
+                                  ## Status 'rc' means it's already been removed
+ii  linux-image-4.2.0-15-generic  ## The oldest installed kernel. Eligible for removal.
+                                  ## Status 'ii' means Installed.
+ii  linux-image-4.2.0-16-generic  ## Another old installed kernel. Eligible for removal
+ii  linux-image-4.2.0-18-generic  ## Another old installed kernel. Eligible for removal
+ii  linux-image-4.2.0-19-generic  ## The previous good kernel. Keep
+iU  linux-image-4.2.0-22-generic  ## DO NOT REMOVE. Status 'iU' means it's not installed,
+                                  ## but queued for install in apt.
+                                  ## This is the package we want apt to install.
+
+                                  ## Purge the oldest kernel package using dpkg instead of apt.
+                                  ## First you need to remove the image initrd.img file manually
+                                  ## due to Bug #1678187.
+$ sudo update-initramfs -d -k 4.2.0-15-generic
+$ sudo dpkg --purge linux-image-4.2.0-15-generic linux-image-extra-4.2.0-15-generic
+                                  ## If the previous command fails, some installed package
+                                  ## depends on the kernel. The output of dpkg tells the name
+                                  ## of the package. Purge it first.
+
+                                  ## Also purge the respective header package.
+$ sudo dpkg --purge linux-headers-4.2.0-15-generic
+                                  ## Try also purging the common header package.
+$ sudo dpkg --purge linux-headers-4.2.0-15
+                                  ## Do not worry, if the previous command fails.
+
+$ sudo apt-get -f install         ## Try to fix the broken dependency.

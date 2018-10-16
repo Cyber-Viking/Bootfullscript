@@ -1,0 +1,32 @@
+Search for my kernel
+dpkg -l
+
+      dpkg - package manager for Debian
+
+      -l, --list package-name-pattern...
+
+tail -n +6
+
+      tail - output the last part of files
+
+
+
+grep -E 'linux-image-[0-9]+'
+
+
+grep -Fv $(uname -r)
+
+
+
+
+list all other kernels
+
+
+
+
+select second from last kernel
+
+
+
+
+enter each of the following commands using that file name as shown.
