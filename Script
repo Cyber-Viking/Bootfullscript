@@ -3,6 +3,9 @@
 # Output the current kernel
  uname -r
 
+ # Press enter
+ read -p
+
 # List the second from last kernel, remove unneeded info and store the output as a var.
 # "OUTPUT=$(dpkg -l | tail -n +6 | grep -E 'linux-image-[0-9]+' | grep -Fv $(uname -r) | tail -n 2 | head -n 1 | awk '{print $2}')"
 
